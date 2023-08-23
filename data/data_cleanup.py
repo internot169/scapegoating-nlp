@@ -12,17 +12,19 @@ while True:
         maxInt = int(maxInt/10)
 
 reader = csv.reader(open(r"" + datadir.ATK_DIR, 'r', encoding='utf-8'))
-reuters_writer = csv.writer(open(r"" + datadir.REUTERS_DIR, 'w', encoding='utf-8'))
+reuters_writer = csv.writer(
+    open(r"" + datadir.REUTERS_DIR, 'w', encoding='utf-8'))
 cnn_writer = csv.writer(open(r"" + datadir.CNN_DIR, 'w', encoding='utf-8'))
 fox_writer = csv.writer(open(r"" + datadir.FOX_DIR, 'w', encoding='utf-8'))
 nytimes_writer = csv.writer(open(r"" + datadir.NYTIMES_DIR, 'w', encoding='utf-8'))
 
-def contains(input, keywords):
-    for keyword in keywords:
-        if (keyword not in input):
-            return False
-    return True
 
+def contains(input, keyword):
+    if (input.find(keyword) != -1):
+        return True
+    return False
+
+counter = 0
 for row in reader:
     if(contains(row[6], datadir.KEYWORDS)):
         if (row[9] == 'Reuters'):
@@ -33,3 +35,6 @@ for row in reader:
             fox_writer.writerow(row)
         elif (row[9] == 'The New York Times'):
             nytimes_writer.writerow(row)
+        counter += 1
+
+print(counter)
