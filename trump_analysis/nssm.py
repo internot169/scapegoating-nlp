@@ -60,21 +60,57 @@ def most_negative_entity_in_corpus(dict, corpus):
     return (max, max_key)
 
 def nssm_a(corpus, sentiment, naes):
-    return sentiment * (ALPHA + (BETA * (1 - most_negative_entity_in_corpus(naes, corpus)[0])))
+    smoothed =  sentiment * (ALPHA + (BETA * (1 - most_negative_entity_in_corpus(naes, corpus)[0])))
+
+    sentiment_final = 0
+    if (smoothed <= -0.05):
+        sentiment_final = -1
+    elif (smoothed > -0.05 and smoothed < 0.05):
+        sentiment_final = 0
+    else:
+        sentiment_final = 1
+    
+    return (smoothed, sentiment_final)
 
 def nssm_b(corpus, sentiment, naes):
-    return sentiment * (ALPHA + (1 / (BETA / (1 + sum_naes_in_corpus(naes, corpus)))))
+    smoothed =  sentiment * (ALPHA + (1 / (BETA / (1 + sum_naes_in_corpus(naes, corpus)))))
+
+    sentiment_final = 0
+    if (smoothed <= -0.05):
+        sentiment_final = -1
+    elif (smoothed > -0.05 and smoothed < 0.05):
+        sentiment_final = 0
+    else:
+        sentiment_final = 1
+    
+    return (smoothed, sentiment_final)
 
 def nssm_c(corpus, sentiment, naes):
-    return sentiment * (ALPHA + (BETA / 1 + most_negative_entity_in_corpus(naes, corpus)[0]))
+    smoothed = sentiment * (ALPHA + (BETA / 1 + most_negative_entity_in_corpus(naes, corpus)[0]))
+
+    sentiment_final = 0
+    if (smoothed <= -0.05):
+        sentiment_final = -1
+    elif (smoothed > -0.05 and smoothed < 0.05):
+        sentiment_final = 0
+    else:
+        sentiment_final = 1
+    
+    return (smoothed, sentiment_final)
 
 
 def apply_nssm(df):
     naes = get_naes(df)
 
     for index, row in df.iterrows():
-        row['A_Sentiment'] = nssm_a(row['Body'], row['Sentiment'], naes)
-        row['B_Sentiment'] = nssm_b(row['Body'], row['Sentiment'], naes)
-        row['C_Sentiment'] = nssm_c(row['Body'], row['Sentiment'], naes)
-    
+        a = nssm_a(row['Body'], row['Sentiment'], naes)
+        b = nssm_b(row['Body'], row['Sentiment'], naes)
+        c = nssm_c(row['Body'], row['Sentiment'], naes)
+        df.loc[index, 'A_Sentiment'] = a[0]
+        df.loc[index, 'B_Sentiment'] = b[0]
+        df.loc[index, 'C_Sentiment'] = c[0]
+        df.loc[index, 'A_Sentiment_Final'] = a[1]
+        df.loc[index, 'B_Sentiment_Final'] = b[1]
+        df.loc[index, 'C_Sentiment_Final'] = c[1]
+
     return df
