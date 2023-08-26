@@ -4,7 +4,6 @@ from nltk import sent_tokenize
 # ALSO TRY WEIGHTED MEAN
 def sentiment(text):
     vader = SentimentIntensityAnalyzer()
-    print(vader.summary())
 
     sentences = sent_tokenize(text)
     sentences_count = len(sentences)

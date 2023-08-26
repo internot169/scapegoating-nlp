@@ -1,8 +1,6 @@
 import pandas
 import matplotlib.pyplot as plt
 import seaborn as sns
-import vader_english
-import nssm_english
 
 # number of days to group for visualization
 GROUPING_SIZE = 10
@@ -74,6 +72,7 @@ def group_by_time_series(df):
             
     return (a_dict, b_dict, c_dict, s_dict)
 
+# TODO: Fix the labels
 def visualize_over_time(df, name):
     index = 0
     for dict in group_by_time_series(df):
@@ -106,18 +105,12 @@ def visualize_over_time(df, name):
         plt.savefig(sentiment_type + '_' + name + '.png')
 
         index += 1
-  
     
 
-def analyze_with_nssm(src, name):
+def analyze_with_nssm(src, name, model, smoothing):
     df = pandas.read_csv(src, encoding='utf-8', engine='python', names=['Date', 'Year', 'Month', 'Day', 'Author', 'Title', 'Body', 'Link', 'Section', 'Publication'], on_bad_lines='skip')
 
-    df['Sentiment'] = df['Body'].apply(vader.sentiment)
-    df = nssm.apply_nssm(df)
+    df['Sentiment'] = df['Body'].apply(model)
+    df = smoothing.apply_nssm(df)
 
     visualize_over_time(df, name)
-
-#analyze_with_nssm('./data/reuters.csv', 'Reuters')
-#analyze_with_nssm('./data/cnn.csv', 'CNN')
-#analyze_with_nssm('./data/fox.csv', 'Fox News')
-#analyze_with_nssm('./data/nytimes.csv', 'NY Times')

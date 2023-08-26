@@ -4,7 +4,6 @@ P_THRESHOLD = 0.5
 BETA = 0.9
 ALPHA = 1 - BETA
 
-
 # finding NAEs
 
 def get_potential_naes(df):
